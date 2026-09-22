@@ -19,7 +19,8 @@ function render() {
   const secs = (remaining % 60).toString().padStart(2, '0');
   display.textContent = `${mins}:${secs}`;
   const progress = total ? remaining / total : 0;
-  ring.style.background = `conic-gradient(var(--green) ${progress * 100}%, #dce9df 0)`;
+  const edge = Math.max(0, progress * 100);
+  ring.style.background = `conic-gradient(#d6a45f 0 ${edge}%, #75451f ${edge}% 100%)`;
   document.title = `${mins}:${secs} · Focus Timer`;
 }
 function finish() {
