@@ -1,5 +1,5 @@
-const display = document.querySelector('#timeDisplay');
 const ring = document.querySelector('#timerRing');
+const stopwatch = document.querySelector('#stopwatchVisual');
 const start = document.querySelector('#startButton');
 const reset = document.querySelector('#resetButton');
 const status = document.querySelector('#statusText');
@@ -31,10 +31,12 @@ function applyAccountMode() { accountTools.hidden = !accountMode; document.query
 function render() {
   const mins = Math.floor(remaining / 60).toString().padStart(2, '0');
   const secs = (remaining % 60).toString().padStart(2, '0');
-  display.textContent = `${mins}:${secs}`;
   const progress = total ? remaining / total : 0;
   const edge = Math.max(0, progress * 100);
   ring.style.background = `conic-gradient(#d6a45f 0 ${edge}%, #75451f ${edge}% 100%)`;
+  stopwatch.style.setProperty('--minute-angle', `${progress * 360 - 90}deg`);
+  stopwatch.style.setProperty('--second-angle', `${(remaining % 60) * 6 - 90}deg`);
+  stopwatch.setAttribute('aria-label', `Stopwatch, ${mins} minutes ${secs} seconds remaining`);
   document.title = `${mins}:${secs} · Focus Timer`;
 }
 function finish() {
@@ -46,9 +48,9 @@ function finish() {
 }
 start.addEventListener('click', () => {
   if (!interval && !accountMode && completedToday()) { status.textContent = 'Your free session is used for today.'; footer.textContent = 'Unlock account mode for daily timers.'; return; }
-  if (interval) { clearInterval(interval); interval = null; start.textContent = 'Resume'; status.textContent = 'Paused. Pick up when you’re ready.'; return; }
+  if (interval) { clearInterval(interval); interval = null; stopwatch.classList.remove('running'); start.textContent = 'Resume'; status.textContent = 'Paused. Pick up when you’re ready.'; return; }
   if (remaining === 0) remaining = total;
-  start.textContent = 'Pause'; status.textContent = 'You’re in the zone.'; phase.textContent = 'FOCUS SESSION';
+  start.textContent = 'Pause'; status.textContent = 'You’re in the zone.'; phase.textContent = 'FOCUS SESSION'; stopwatch.classList.add('running');
   if (soundOn && 'Notification' in window && Notification.permission === 'default') Notification.requestPermission();
   interval = setInterval(() => { remaining--; render(); if (remaining <= 0) finish(); }, 1000);
 });
@@ -79,4 +81,5 @@ function renderDaily() { const list = document.querySelector('#dailyList'); cons
 document.querySelector('#addDaily').addEventListener('click', () => { const name = document.querySelector('#dailyName').value.trim() || 'Daily focus'; const minutes = Number(document.querySelector('#dailyMinutes').value); if (!minutes || minutes < 1) return; const items = JSON.parse(localStorage.getItem('focusDaily') || '[]'); items.push({ name, minutes }); localStorage.setItem('focusDaily', JSON.stringify(items)); document.querySelector('#dailyName').value = ''; document.querySelector('#dailyMinutes').value = ''; renderDaily(); });
 const savedColor = localStorage.getItem('focusColor'); if (savedColor) { document.documentElement.style.setProperty('--green', savedColor); document.querySelector('#colorPicker').value = savedColor; } applyAccountMode();
 applyClockStyle(localStorage.getItem('focusClockStyle') || 'sunburst');
+reset.addEventListener('click', () => stopwatch.classList.remove('running'));
 render();
