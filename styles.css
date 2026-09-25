@@ -36,3 +36,12 @@ body[data-clock="sunburst"] .timer-ring::before { background-image:linear-gradie
 .timer-card .clock-option { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 50px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 11px; background: #fff; color: var(--muted); font-size: 11px; font-weight: 700; text-align: left; }
 .timer-card .clock-option.active { border-color: var(--green); background: var(--mint); color: var(--green); }
 .timer-card .clock-preview { display: block; width: 34px; height: 34px; flex: 0 0 34px; border-radius: 50%; }
+
+/* High-contrast selector treatment matching the reference layout. */
+.timer-card .clock-picker { width: min(100%, 538px) !important; margin: 0 auto 26px !important; }
+.timer-card .clock-picker-heading { display: flex !important; justify-content: space-between !important; align-items: center !important; margin: 0 0 12px !important; font-family: 'Space Grotesk', sans-serif !important; font-size: 16px !important; }
+.timer-card .clock-options { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; }
+.timer-card .clock-option { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; gap: 10px !important; min-height: 62px !important; padding: 10px 12px !important; border: 1px solid #d4d7df !important; border-radius: 13px !important; background: #fff !important; color: #526078 !important; font-family: 'DM Sans', sans-serif !important; font-size: 13px !important; font-weight: 700 !important; }
+.timer-card .clock-option.active { border-color: #c88927 !important; background: #fff7df !important; color: #9d5a1d !important; box-shadow: 0 5px 12px rgba(45, 56, 80, .08) !important; }
+.timer-card .clock-option:hover { border-color: #c88927 !important; transform: translateY(-1px); }
+.timer-card .clock-preview { width: 42px !important; height: 42px !important; flex: 0 0 42px !important; }
