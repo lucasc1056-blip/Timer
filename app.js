@@ -9,6 +9,8 @@ const soundToggle = document.querySelector('#soundToggle');
 let total = 25 * 60, remaining = total, interval = null, soundOn = true;
 const authModal = document.querySelector('#authModal');
 let accountMode = localStorage.getItem('focusAccount') === 'true';
+const accountsKey = 'focusAccounts';
+const getAccounts = () => JSON.parse(localStorage.getItem(accountsKey) || '[]');
 const todayKey = () => new Date().toISOString().slice(0, 10);
 const completedToday = () => localStorage.getItem('focusCompleted') === todayKey();
 const accountTools = document.querySelector('#accountTools');
@@ -24,7 +26,7 @@ function applyClockStyle(style) {
   });
   localStorage.setItem('focusClockStyle', validStyle);
 }
-function applyAccountMode() { accountTools.hidden = !accountMode; document.querySelector('#accountButton').textContent = accountMode ? 'Account mode' : 'Unlock account'; if (accountMode) renderDaily(); }
+function applyAccountMode() { accountTools.hidden = !accountMode; document.querySelector('#accountButton').textContent = accountMode ? 'Account mode' : 'Sign in'; if (accountMode) renderDaily(); }
 
 function render() {
   const mins = Math.floor(remaining / 60).toString().padStart(2, '0');
@@ -58,10 +60,20 @@ clockPicker.addEventListener('click', event => {
   if (option) { event.preventDefault(); applyClockStyle(option.dataset.clock); }
 });
 document.querySelector('#setCustomButton').addEventListener('click', () => { const minutes = Math.max(0, Number(document.querySelector('#customMinutes').value || 0)); const seconds = Math.min(59, Math.max(0, Number(document.querySelector('#customSeconds').value || 0))); if (minutes === 0 && seconds === 0) { document.querySelector('#inputNote').textContent = 'Please enter at least one minute or second.'; return; } total = minutes * 60 + seconds; remaining = total; clearInterval(interval); interval = null; start.textContent = 'Start timer'; status.textContent = 'Ready when you are.'; document.querySelector('#inputNote').textContent = 'Custom duration set.'; document.querySelectorAll('.preset').forEach(p => p.classList.remove('active')); render(); });
-document.querySelector('#accountButton').addEventListener('click', () => { authModal.hidden = false; document.querySelector('#codeInput').focus(); });
+document.querySelector('#accountButton').addEventListener('click', () => { authModal.hidden = false; document.querySelector('#accountName').focus(); });
 document.querySelector('#closeAuth').addEventListener('click', () => { authModal.hidden = true; });
-document.querySelector('#codeForm').addEventListener('submit', (event) => { event.preventDefault(); document.querySelector('#accountButton').textContent = 'Unlocked'; authModal.hidden = true; });
-document.querySelector('#codeForm').addEventListener('submit', () => { accountMode = true; localStorage.setItem('focusAccount', 'true'); applyAccountMode(); });
+document.querySelector('#codeForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const name = document.querySelector('#accountName').value.trim();
+  const passcode = document.querySelector('#codeInput').value;
+  const message = document.querySelector('#authMessage');
+  const accounts = getAccounts();
+  const existing = accounts.find(account => account.name.toLowerCase() === name.toLowerCase() && account.passcode === passcode);
+  if (!existing && accounts.length >= 5) { message.textContent = 'The maximum of 5 accounts has been reached.'; return; }
+  if (!existing) { accounts.push({ name, passcode }); localStorage.setItem(accountsKey, JSON.stringify(accounts)); }
+  localStorage.setItem('focusAccountName', name);
+  accountMode = true; localStorage.setItem('focusAccount', 'true'); applyAccountMode(); authModal.hidden = true;
+});
 document.querySelector('#colorPicker').addEventListener('input', (event) => { document.documentElement.style.setProperty('--green', event.target.value); localStorage.setItem('focusColor', event.target.value); });
 function renderDaily() { const list = document.querySelector('#dailyList'); const items = JSON.parse(localStorage.getItem('focusDaily') || '[]'); document.querySelector('#dailyCount').textContent = `${items.length} saved`; list.innerHTML = items.map((item, i) => `<div class="daily-item"><span><strong>${item.name}</strong> · ${item.minutes} min</span><button data-index="${i}">Start</button></div>`).join(''); list.querySelectorAll('button').forEach(button => button.addEventListener('click', () => { const item = items[button.dataset.index]; total = item.minutes * 60; remaining = total; clearInterval(interval); interval = null; start.textContent = 'Start timer'; status.textContent = `${item.name} is ready.`; render(); })); }
 document.querySelector('#addDaily').addEventListener('click', () => { const name = document.querySelector('#dailyName').value.trim() || 'Daily focus'; const minutes = Number(document.querySelector('#dailyMinutes').value); if (!minutes || minutes < 1) return; const items = JSON.parse(localStorage.getItem('focusDaily') || '[]'); items.push({ name, minutes }); localStorage.setItem('focusDaily', JSON.stringify(items)); document.querySelector('#dailyName').value = ''; document.querySelector('#dailyMinutes').value = ''; renderDaily(); });
