@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Focus Timer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">◷</span><span>Focus Timer</span></div>
+      <button class="icon-button" id="soundToggle" aria-label="Toggle sound" title="Toggle sound">🔔</button>
+      <button class="account-button" id="accountButton">Unlock account</button>
+    </header>
+
+    <section class="timer-card" aria-labelledby="timerHeading">
+      <div class="eyebrow">STAY IN THE MOMENT</div>
+      <h1 id="timerHeading">Deep work</h1>
+      <p class="subtitle" id="statusText">Ready when you are.</p>
+
+      <div class="timer-ring" id="timerRing">
+        <div class="timer-face">
+          <div class="time" id="timeDisplay">25:00</div>
+          <div class="phase" id="phaseDisplay">FOCUS SESSION</div>
+        </div>
+      </div>
+
+      <div class="clock-picker" aria-labelledby="clockStyleLabel">
+        <div class="clock-picker-heading"><span id="clockStyleLabel">Clock style</span><span>Choose your look</span></div>
+        <div class="clock-options" role="radiogroup" aria-label="Clock style">
+          <button class="clock-option active" data-clock="royal" role="radio" aria-checked="true"><span class="clock-preview royal-preview"><i></i></span><span>Royal</span></button>
+          <button class="clock-option" data-clock="neon" role="radio" aria-checked="false"><span class="clock-preview neon-preview"><i></i></span><span>Neon</span></button>
+          <button class="clock-option" data-clock="sunburst" role="radio" aria-checked="false"><span class="clock-preview sunburst-preview"><i></i></span><span>Sunburst</span></button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="secondary-button" id="resetButton">Reset</button>
+        <button class="primary-button" id="startButton">Start timer</button>
+      </div>
+      <div class="custom-time"><label for="customMinutes">Set your own time</label><div class="custom-fields"><input id="customMinutes" type="number" min="0" max="999" placeholder="25" aria-label="Minutes" /><span>min</span><input id="customSeconds" type="number" min="0" max="59" placeholder="00" aria-label="Seconds" /><span>sec</span><button id="setCustomButton">Set timer</button></div><p class="input-note" id="inputNote">Enter a duration, then press Set timer.</p></div>
+    </section>
+
+    <section class="presets" aria-labelledby="presetsHeading">
+      <div class="section-heading"><h2 id="presetsHeading">Quick presets</h2><span>Choose your rhythm</span></div>
+      <div class="preset-grid">
+        <button class="preset active" data-minutes="25"><strong>25</strong><span>Pomodoro</span></button>
+        <button class="preset" data-minutes="5"><strong>05</strong><span>Quick break</span></button>
+        <button class="preset" data-minutes="15"><strong>15</strong><span>Long break</span></button>
+        <button class="preset" data-minutes="50"><strong>50</strong><span>Deep focus</span></button>
+      </div>
+    </section>
+
+    <section class="account-tools" id="accountTools" hidden aria-labelledby="accountToolsHeading">
+      <div class="section-heading"><h2 id="accountToolsHeading">Account tools</h2><span>Personalize your rhythm</span></div>
+      <div class="tools-row"><label>Timer color <input id="colorPicker" type="color" value="#1f8a63" /></label><label class="alarm-toggle"><input id="alarmToggle" type="checkbox" checked /> Alarm when finished</label></div>
+      <div class="daily-heading"><strong>Daily timers</strong><span id="dailyCount">0 saved</span></div>
+      <div class="daily-list" id="dailyList"></div>
+      <div class="add-daily"><input id="dailyName" type="text" maxlength="24" placeholder="Timer name" /><input id="dailyMinutes" type="number" min="1" max="999" placeholder="Minutes" /><button id="addDaily">Add timer</button></div>
+    </section>
+
+    <footer><span class="dot"></span><span id="footerText">One thing at a time.</span></footer>
+  </main>
+  <div class="modal-backdrop" id="authModal" hidden><section class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authTitle"><button class="close-button" id="closeAuth" aria-label="Close">×</button><div class="lock-badge">⌑</div><h2 id="authTitle">Unlock Focus Timer</h2><p>Account mode includes alarms, colors, and daily timers.</p><form id="codeForm"><label for="codeInput">Passcode</label><input id="codeInput" type="password" inputmode="numeric" maxlength="6" placeholder="Enter passcode" required /><label class="robot-check"><input id="robotCheck" type="checkbox" required /><span>I am not a robot</span></label><button class="primary-button full" type="submit">Continue</button></form><p class="auth-message" id="authMessage"></p></section></div>
+  <script src="app.js"></script>
+</body>
+</html>
