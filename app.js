@@ -12,6 +12,7 @@ let accountMode = localStorage.getItem('focusAccount') === 'true';
 const todayKey = () => new Date().toISOString().slice(0, 10);
 const completedToday = () => localStorage.getItem('focusCompleted') === todayKey();
 const accountTools = document.querySelector('#accountTools');
+const clockPicker = document.querySelector('.clock-options');
 const clockOptions = document.querySelectorAll('.clock-option');
 function applyClockStyle(style) {
   const validStyle = ['royal', 'neon', 'sunburst'].includes(style) ? style : 'royal';
@@ -52,7 +53,10 @@ start.addEventListener('click', () => {
 reset.addEventListener('click', () => { clearInterval(interval); interval = null; remaining = total; start.textContent = 'Start timer'; status.textContent = 'Ready when you are.'; phase.textContent = 'FOCUS SESSION'; footer.textContent = 'One thing at a time.'; render(); });
 document.querySelectorAll('.preset').forEach(button => button.addEventListener('click', () => { total = Number(button.dataset.minutes) * 60; remaining = total; clearInterval(interval); interval = null; start.textContent = 'Start timer'; status.textContent = 'Ready when you are.'; document.querySelectorAll('.preset').forEach(p => p.classList.remove('active')); button.classList.add('active'); render(); }));
 soundToggle.addEventListener('click', () => { soundOn = !soundOn; soundToggle.textContent = soundOn ? '🔔' : '🔕'; soundToggle.setAttribute('aria-label', soundOn ? 'Mute sound' : 'Enable sound'); });
-clockOptions.forEach(option => option.addEventListener('click', () => applyClockStyle(option.dataset.clock)));
+clockPicker.addEventListener('click', event => {
+  const option = event.target.closest('.clock-option');
+  if (option) { event.preventDefault(); applyClockStyle(option.dataset.clock); }
+});
 document.querySelector('#setCustomButton').addEventListener('click', () => { const minutes = Math.max(0, Number(document.querySelector('#customMinutes').value || 0)); const seconds = Math.min(59, Math.max(0, Number(document.querySelector('#customSeconds').value || 0))); if (minutes === 0 && seconds === 0) { document.querySelector('#inputNote').textContent = 'Please enter at least one minute or second.'; return; } total = minutes * 60 + seconds; remaining = total; clearInterval(interval); interval = null; start.textContent = 'Start timer'; status.textContent = 'Ready when you are.'; document.querySelector('#inputNote').textContent = 'Custom duration set.'; document.querySelectorAll('.preset').forEach(p => p.classList.remove('active')); render(); });
 document.querySelector('#accountButton').addEventListener('click', () => { authModal.hidden = false; document.querySelector('#codeInput').focus(); });
 document.querySelector('#closeAuth').addEventListener('click', () => { authModal.hidden = true; });
